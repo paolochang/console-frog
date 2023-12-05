@@ -1,6 +1,6 @@
-# flog README
+# frog README
 
-This is the README for your extension "flog". After writing up a brief description, we recommend including the following sections.
+This is the README for your extension "frog". After writing up a brief description, we recommend including the following sections.
 
 ## Features
 
