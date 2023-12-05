@@ -1,6 +1,6 @@
 {
-  "name": "flog",
-  "displayName": "fLog",
+  "name": "frog",
+  "displayName": "frog",
   "description": "",
   "version": "0.0.1",
   "engines": {
@@ -14,7 +14,7 @@
   "contributes": {
     "commands": [
       {
-        "command": "flog.helloWorld",
+        "command": "frog.helloWorld",
         "title": "Hello World"
       }
     ]
