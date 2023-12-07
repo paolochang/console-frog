@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
+import { includes } from "lodash";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -19,15 +20,21 @@ export function activate(context: vscode.ExtensionContext) {
       const selection = editor.selection;
       const variableName = editor.document.getText(selection);
 
-      // Construct the log statement
-      const logStatement = `console.log("${variableName}:", ${variableName});\n`;
-
       // Get the current position and line number
       const position = editor.selection.active;
-      const lineNumber = position.line;
+
+      const [newLine, newIndent] = getConsolePosition(
+        editor,
+        selection.active.line
+      );
 
       // Calculate position for inserting the log statement on the next line
-      const newPosition = position.with(lineNumber + 1, 0); // Next line
+      const newPosition = position.with(newLine, 0); // Next line
+
+      // Construct the log statement
+      const logStatement = `${" ".repeat(
+        newIndent
+      )}console.log("${variableName}:", ${variableName});\n`;
 
       // Insert the log statement at the calculated position
       editor.edit((editBuilder) => {
@@ -41,3 +48,54 @@ export function activate(context: vscode.ExtensionContext) {
 
 // This method is called when your extension is deactivated
 export function deactivate() {}
+
+// TODO: Handle double slashes in the middle of code as string
+function getValidCode(text: string): string {
+  if (includes(text, "//")) {
+    const startAt = text.indexOf("//");
+    text = text.slice(0, startAt).trim();
+  }
+  return text;
+}
+
+function getEndLine(editor: vscode.TextEditor, lineNumber: number): number[] {
+  let char = undefined;
+  let lineCount = lineNumber;
+  let lineIndent = 0;
+
+  while (char !== ";") {
+    lineCount += 1;
+    const next = editor.document.lineAt(lineCount);
+    const code = getValidCode(next.text);
+    char = code.charAt(code.length - 1);
+    lineIndent = next.firstNonWhitespaceCharacterIndex;
+  }
+
+  return [lineCount, lineIndent];
+}
+
+function getConsolePosition(
+  editor: vscode.TextEditor,
+  lineNumber: number
+): number[] {
+  const line = editor.document.lineAt(lineNumber);
+  const nextLine = editor.document.lineAt(lineNumber + 1);
+
+  const validCode = getValidCode(line.text);
+
+  const lastChar = validCode.charAt(validCode.length - 1);
+
+  switch (lastChar) {
+    case "{":
+      console.log("Next Line", lineNumber + 1);
+      return [lineNumber + 1, nextLine.firstNonWhitespaceCharacterIndex];
+
+    case ";":
+      return [lineNumber + 1, line.firstNonWhitespaceCharacterIndex];
+
+    case "(":
+    default:
+      const [lineCount, lineIndent] = getEndLine(editor, lineNumber);
+      return [lineCount + 1, lineIndent];
+  }
+}
