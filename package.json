@@ -1,8 +1,9 @@
 {
-  "name": "frog",
-  "displayName": "frog",
-  "description": "console.🐸",
+  "name": "console-frog",
+  "displayName": "console.frog",
+  "description": "Print console 🐸",
   "version": "0.0.1",
+  "publisher": "paolochang",
   "engines": {
     "vscode": "^1.84.0"
   },
