@@ -1,7 +1,7 @@
 {
   "name": "frog",
   "displayName": "frog",
-  "description": "🐸 for Log",
+  "description": "console.🐸",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.84.0"
@@ -10,13 +10,43 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:frog.consoleLog"
+    "onCommand:frog.consoleYellow",
+    "onCommand:frog.consoleIvory",
+    "onCommand:frog.consoleOrange",
+    "onCommand:frog.consolePrint",
+    "onCommand:frog.consoleKhaki",
+    "onCommand:frog.consoleLime"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "keybindings": [
       {
-        "command": "frog.consoleLog",
+        "command": "frog.consoleYellow",
+        "key": "ctrl+alt+y",
+        "mac": "ctrl+alt+y"
+      },
+      {
+        "command": "frog.consoleIvory",
+        "key": "ctrl+alt+i",
+        "mac": "ctrl+alt+i"
+      },
+      {
+        "command": "frog.consoleOrange",
+        "key": "ctrl+alt+o",
+        "mac": "ctrl+alt+o"
+      },
+      {
+        "command": "frog.consolePrint",
+        "key": "ctrl+alt+p",
+        "mac": "ctrl+alt+p"
+      },
+      {
+        "command": "frog.consoleKhaki",
+        "key": "ctrl+alt+k",
+        "mac": "ctrl+alt+k"
+      },
+      {
+        "command": "frog.consoleLime",
         "key": "ctrl+alt+l",
         "mac": "ctrl+alt+l"
       }

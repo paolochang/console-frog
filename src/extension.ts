@@ -1,19 +1,38 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-import { includes, startsWith } from "lodash";
+import { isEmpty, startsWith } from "lodash";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
-  console.log("🐸 is now active!");
+  const consoleYellow = registerCommand("frog.consoleYellow", "color:yellow");
+  const consoleIvory = registerCommand("frog.consoleIvory", "color:ivory");
+  const consoleOrange = registerCommand("frog.consoleOrange", "color:orange");
+  const consolePrint = registerCommand("frog.consolePrint");
+  const consoleKhaki = registerCommand("frog.consoleKhaki", "color:khaki");
+  const consoleLime = registerCommand("frog.consoleLime", "color:lime");
 
-  // The command has been defined in the package.json file
-  // Now provide the implementation of the command with registerCommand
-  // The commandId parameter must match the command field in package.json
-  let disposable = vscode.commands.registerCommand("frog.consoleLog", () => {
+  context.subscriptions.push(
+    consoleYellow,
+    consoleIvory,
+    consoleOrange,
+    consolePrint,
+    consoleKhaki,
+    consoleLime
+  );
+}
+
+// This method is called when your extension is deactivated
+export function deactivate() {}
+
+// The command has been defined in the package.json file
+// Now provide the implementation of the command with registerCommand
+// The commandId parameter must match the command field in package.json
+function registerCommand(command: string, color: string = "") {
+  return vscode.commands.registerCommand(command, () => {
     const editor = vscode.window.activeTextEditor;
 
     if (editor) {
@@ -24,16 +43,12 @@ export function activate(context: vscode.ExtensionContext) {
       const position = editor.selection.active;
 
       // Calculate position for inserting the log statement
-      const [newLine, numIndent] = getConsolePosition(
-        editor,
-        selection.active.line
-      );
+      const [newLine, numIndent] = getConsolePosition(editor);
 
       const newPosition = position.with(newLine, 0);
 
       // Construct the log statement
-      const newIndent = " ".repeat(numIndent);
-      const logStatement = `${newIndent}console.log("${variableName}:", ${variableName});\n`;
+      const logStatement = getLogStatement(numIndent, variableName, color);
 
       // Insert the log statement at the calculated position
       editor.edit((editBuilder) => {
@@ -41,12 +56,23 @@ export function activate(context: vscode.ExtensionContext) {
       });
     }
   });
-
-  context.subscriptions.push(disposable);
 }
 
-// This method is called when your extension is deactivated
-export function deactivate() {}
+function getLogStatement(
+  numIndent: number,
+  variableName: string,
+  color: string
+) {
+  const statement = [];
+  const newIndent = " ".repeat(numIndent);
+  statement.push(newIndent);
+  statement.push(`console.log("%c🐸 ${variableName}:", ${variableName}`);
+  if (!isEmpty(color)) {
+    statement.push(`, "${color}"`);
+  }
+  statement.push(");\n");
+  return statement.join("");
+}
 
 // Return pure code without comments
 function getCleanCode(input: string): string {
@@ -100,10 +126,10 @@ function getEndLine(
   return [lineCount, lineIndent];
 }
 
-function getConsolePosition(
-  editor: vscode.TextEditor,
-  lineNumber: number
-): [number, number] {
+function getConsolePosition(editor: vscode.TextEditor): [number, number] {
+  const selection = editor.selection;
+  const lineNumber = selection.active.line;
+
   const line = editor.document.lineAt(lineNumber);
 
   const validCode = getCleanCode(line.text);
