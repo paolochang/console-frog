@@ -17,9 +17,13 @@ export function activate(context: vscode.ExtensionContext) {
       if (editor) {
         const document = editor.document;
         const fullText = document.getText();
-        const newText = fullText.replace(
-          /console\.log\("%c🐸/g,
-          'console.log("%c'
+        const consoleWithColor = fullText.replace(
+          /console\.log\(`%c🐸/g,
+          "console.log(`%c"
+        );
+        const consoleWithoutColor = fullText.replace(
+          /console\.log\(`🐸/g,
+          "console.log(`"
         );
 
         const selection = editor.selection;
@@ -35,7 +39,12 @@ export function activate(context: vscode.ExtensionContext) {
         workspaceEdit.replace(
           document.uri,
           new vscode.Range(0, 0, document.lineCount, 0),
-          newText
+          consoleWithColor
+        );
+        workspaceEdit.replace(
+          document.uri,
+          new vscode.Range(0, 0, document.lineCount, 0),
+          consoleWithoutColor
         );
         workspaceEdit.insert(
           document.uri,
@@ -57,9 +66,15 @@ export function activate(context: vscode.ExtensionContext) {
     const statement = [];
     const newIndent = " ".repeat(numIndent);
     statement.push(newIndent);
-    statement.push(`console.log("%c🐸 ${variableName}:", ${variableName}`);
     if (!isEmpty(color)) {
+      statement.push(
+        `console.log(\`%c🐸 ${variableName}: \$\{${variableName}\}\``
+      );
       statement.push(`, "${color}"`);
+    } else {
+      statement.push(
+        `console.log(\`🐸 ${variableName}: \$\{${variableName}\}\``
+      );
     }
     statement.push(");\n");
     return statement.join("");
