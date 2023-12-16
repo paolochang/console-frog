@@ -4,8 +4,13 @@
   "description": "Print console 🐸",
   "version": "0.0.1",
   "publisher": "paolochang",
+  "license": "MIT",
   "engines": {
     "vscode": "^1.84.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/paolochang/console-frog"
   },
   "categories": [
     "Other"
